@@ -26,7 +26,7 @@ public class HttpResponse {
         Map<String, String> responseHeaders = new HashMap<String, String>();
         for (Map.Entry<String, List<String>> entries : httpURLConnection.getHeaderFields().entrySet()) {
             StringBuilder values = new StringBuilder();
-            if (entries.getKey().equals("null")) {
+            if (entries.getKey() == null) {
                 continue;
             }
             for (String value : entries.getValue()) {
