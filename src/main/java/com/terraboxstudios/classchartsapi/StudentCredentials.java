@@ -1,4 +1,4 @@
-package com.terraboxstudios.classchartsapi.obj;
+package com.terraboxstudios.classchartsapi;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
