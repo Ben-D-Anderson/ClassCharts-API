@@ -20,7 +20,7 @@ public final class StudentCredentials {
     private final String code;
     @Getter
     private final String dateOfBirth;
-    private final static String dateRegex = "^\\d{2}-\\d{2}-\\d{4}$";
+    private final static String dateRegex = "^\\d{2}/\\d{2}/\\d{4}$";
 
     public static StudentCredentials from(String code, String dateOfBirth) throws DateFormatException, CodeException, IOException {
         HttpRequest httpRequest = new HttpRequest.Builder
