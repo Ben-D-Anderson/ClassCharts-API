@@ -9,12 +9,14 @@ import java.util.Map;
 public class HttpRequest {
 
     private final String url, method;
+    private final boolean followRedirects;
     private final Map<String, String> params;
     private final List<HttpCookie> cookies;
     private final List<HttpHeader> headers;
 
     private HttpRequest(HttpRequest.Builder builder) {
         this.url = builder.url;
+        this.followRedirects = builder.followRedirects;
         this.method = builder.method;
         this.cookies = builder.cookies;
         this.headers = builder.headers;
@@ -28,9 +30,8 @@ public class HttpRequest {
         }
         HttpURLConnection httpURLConnection = (HttpURLConnection) new URL(this.method.equals("GET") ? this.url + (queryString != null ? "?" + queryString : "") : this.url).openConnection();
         httpURLConnection.setRequestMethod(this.method);
-        httpURLConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (iPhone; CPU iPhone OS 12_2 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.1 Mobile/15E148 Safari/604.1");
-        httpURLConnection.setUseCaches(false);
-        httpURLConnection.setDoInput(true);
+        httpURLConnection.setRequestProperty("accept", "*/*");
+        httpURLConnection.setInstanceFollowRedirects(this.followRedirects);
         assert queryString != null;
         httpURLConnection.setRequestProperty("Content-Length", String.valueOf(queryString.length()));
 
@@ -84,6 +85,7 @@ public class HttpRequest {
 
     public static class Builder {
 
+        private boolean followRedirects;
         private final String url, method;
         private Map<String, String> params;
         private final List<HttpCookie> cookies = new ArrayList<HttpCookie>();
@@ -101,6 +103,11 @@ public class HttpRequest {
 
         public Builder setHeader(HttpHeader header) {
             this.headers.add(header);
+            return this;
+        }
+
+        public Builder setFollowRedirects(boolean followRedirects) {
+            this.followRedirects = followRedirects;
             return this;
         }
 
