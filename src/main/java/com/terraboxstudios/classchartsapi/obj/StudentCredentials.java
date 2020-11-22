@@ -7,10 +7,11 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @AllArgsConstructor (access = AccessLevel.PRIVATE)
-@Getter
 public final class StudentCredentials {
 
+    @Getter
     private final String code;
+    @Getter
     private final String dateOfBirth;
     private final static String dateRegex = "^\\d{2}-\\d{2}-\\d{4}$";
     private final static int codeLength = 8;
