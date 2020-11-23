@@ -16,7 +16,6 @@ public class HttpResponse {
     private final int responseCode;
     private final Map<String, List<String>> responseHeaders;
 
-
     protected HttpResponse(HttpURLConnection httpURLConnection) throws IOException {
         this.responseMessage = httpURLConnection.getResponseMessage();
         this.responseCode = httpURLConnection.getResponseCode();
