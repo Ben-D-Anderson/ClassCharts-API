@@ -1,5 +1,7 @@
 package com.terraboxstudios.classchartsapi.http;
 
+import com.terraboxstudios.classchartsapi.exception.ServerException;
+
 import java.io.*;
 import java.net.*;
 import java.util.ArrayList;
@@ -23,7 +25,7 @@ public class HttpRequest {
         this.params = builder.params;
     }
 
-    public HttpResponse execute() throws IOException {
+    public HttpResponse execute() throws IOException, ServerException {
         String queryString = "";
         if (this.params != null && !this.params.isEmpty()) {
             queryString = getParamsString(this.params);
@@ -62,6 +64,10 @@ public class HttpRequest {
         }
 
         httpURLConnection.connect();
+
+        if (String.valueOf(httpURLConnection.getResponseCode()).charAt(0) == '5') {
+            throw new ServerException("HTTP error code " + httpURLConnection.getResponseCode() + " was returned.");
+        }
 
         return new HttpResponse(httpURLConnection);
 
