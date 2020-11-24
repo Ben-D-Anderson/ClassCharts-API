@@ -122,11 +122,6 @@ public class Student {
      * meaning that if the homework has already been ticked then
      * it will be un-ticked and if it isn't ticked then it will
      * become ticked.
-     *
-     * @param homework
-     * @throws IOException
-     * @throws ServerException
-     * @throws HomeworkTickException
      */
     public void tickHomework(Homework homework) throws IOException, ServerException, HomeworkTickException {
         HttpRequest.Builder httpRequestBuilder = new HttpRequest.Builder("https://www.classcharts.com/apiv2student/homeworkticked/" + homework.getStatus().getId(), "POST")
