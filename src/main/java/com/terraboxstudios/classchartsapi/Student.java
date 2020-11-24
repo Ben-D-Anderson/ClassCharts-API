@@ -18,18 +18,16 @@ import java.util.*;
 
 public class Student {
 
-    private final StudentCredentials studentCredentials;
     private final List<String> cookies = new LinkedList<>();
     private HttpHeader authorizationHeader;
     private int studentId;
 
     public Student(StudentCredentials studentCredentials) throws IOException, IDRetrievalException, LoginException, ServerException {
-        this.studentCredentials = studentCredentials;
-        login();
+        login(studentCredentials);
         loadStudentId();
     }
 
-    private void login() throws IOException, LoginException, ServerException {
+    private void login(StudentCredentials studentCredentials) throws IOException, LoginException, ServerException {
         Map<String, String> params = new HashMap<>();
         params.put("_method", "POST");
         params.put("code", studentCredentials.getCode());
@@ -67,10 +65,7 @@ public class Student {
         this.studentId = elem.get("data").getAsJsonObject().get("user").getAsJsonObject().get("id").getAsInt();
     }
 
-    public List<Homework> getHomework() throws IOException, HomeworkRetrievalException, ServerException {
-        HttpRequest.Builder httpRequestBuilder = new HttpRequest.Builder("https://www.classcharts.com/apiv2student/homeworks/" + this.studentId, "GET")
-                .setFollowRedirects(false)
-                .setHeader(authorizationHeader);
+    private List<Homework> homeworkRequester(HttpRequest.Builder httpRequestBuilder) throws IOException, ServerException, HomeworkRetrievalException {
         cookies.forEach(cookie -> httpRequestBuilder.setCookie(new HttpCookie(cookie.split("=")[0], cookie.split("=")[1])));
         HttpRequest httpRequest = httpRequestBuilder.build();
         HttpResponse httpResponse = httpRequest.execute();
@@ -81,6 +76,17 @@ public class Student {
         List<Homework> homeworkList = new LinkedList<>();
         jsonObject.get("data").getAsJsonArray().iterator().forEachRemaining(obj -> homeworkList.add(new Gson().fromJson(obj, Homework.class)));
         return homeworkList;
+    }
+
+    public List<Homework> getHomework() throws IOException, HomeworkRetrievalException, ServerException {
+        HttpRequest.Builder httpRequestBuilder = new HttpRequest.Builder("https://www.classcharts.com/apiv2student/homeworks/" + this.studentId, "GET")
+                .setFollowRedirects(false)
+                .setHeader(authorizationHeader);
+        return homeworkRequester(httpRequestBuilder);
+    }
+
+    public List<Homework> getHomework(String fromDate, String toDate) throws IOException, HomeworkRetrievalException, DateFormatException, ServerException {
+        return getHomework(DisplayDate.ISSUE, fromDate, toDate);
     }
 
     public List<Homework> getHomework(DisplayDate displayDate, String fromDate, String toDate) throws IOException, HomeworkRetrievalException, DateFormatException, ServerException {
@@ -93,20 +99,7 @@ public class Student {
                 .setFollowRedirects(false)
                 .setParams(params)
                 .setHeader(authorizationHeader);
-        cookies.forEach(cookie -> httpRequestBuilder.setCookie(new HttpCookie(cookie.split("=")[0], cookie.split("=")[1])));
-        HttpRequest httpRequest = httpRequestBuilder.build();
-        HttpResponse httpResponse = httpRequest.execute();
-        JsonObject jsonObject = JsonParser.parseString(httpResponse.getContent()).getAsJsonObject();
-        if (jsonObject.get("success").getAsInt() != 1) {
-            throw new HomeworkRetrievalException("Homework could not be retrieved.");
-        }
-        List<Homework> homeworkList = new LinkedList<>();
-        jsonObject.get("data").getAsJsonArray().iterator().forEachRemaining(obj -> homeworkList.add(new Gson().fromJson(obj, Homework.class)));
-        return homeworkList;
-    }
-
-    public List<Homework> getHomework(String fromDate, String toDate) throws IOException, HomeworkRetrievalException, DateFormatException, ServerException {
-        return getHomework(DisplayDate.ISSUE, fromDate, toDate);
+        return homeworkRequester(httpRequestBuilder);
     }
 
 }
