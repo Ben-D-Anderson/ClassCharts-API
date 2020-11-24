@@ -1,7 +1,6 @@
 package com.terraboxstudios.classchartsapi.obj;
 
 import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
