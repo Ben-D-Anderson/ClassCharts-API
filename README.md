@@ -1,7 +1,7 @@
 <h3 align="center">ClassCharts API</h3>
 <br />
 
-##About The Project
+## About The Project
 ClassCharts is an online behavior and homework management system used by schools.
 
 This java project is an unofficial ClassCharts API that can be used to:
@@ -10,7 +10,7 @@ This java project is an unofficial ClassCharts API that can be used to:
 - Mark homework as seen
 - Tick homework off as "completed"
 
-##How To Use
+## How To Use
 First, you should create a StudentCredentials object so that you can create a student object and login to classcharts.
 This can be achieved by calling the static factory method StudentCredential#from(String, String).
 ```java
