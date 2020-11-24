@@ -10,6 +10,8 @@ This java project is an unofficial ClassCharts API wrapper that can be used to:
 - Mark homeworks as seen
 - Tick homeworks off as "completed"
 
+<br />
+
 ## How To Use
 First, you should create a StudentCredentials object so that you can create a Student object and login to ClassCharts.
 
