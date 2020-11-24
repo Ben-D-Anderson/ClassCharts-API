@@ -102,4 +102,44 @@ public class Student {
         return homeworkRequester(httpRequestBuilder);
     }
 
+    public void markHomeworkAsSeen(Homework homework) throws IOException, ServerException, HomeworkSeenException {
+        Map<String, String> params = new HashMap<>();
+        params.put("pupil_id", String.valueOf(this.studentId));
+        HttpRequest.Builder httpRequestBuilder = new HttpRequest.Builder("https://www.classcharts.com/apiv2student/markhomeworkasseen/" + homework.getId(), "POST")
+                .setParams(params)
+                .setFollowRedirects(false)
+                .setHeader(authorizationHeader);
+        cookies.forEach(cookie -> httpRequestBuilder.setCookie(new HttpCookie(cookie.split("=")[0], cookie.split("=")[1])));
+        HttpRequest httpRequest = httpRequestBuilder.build();
+        HttpResponse httpResponse = httpRequest.execute();
+        JsonObject elem = JsonParser.parseString(httpResponse.getContent()).getAsJsonObject();
+        if (elem.get("success").getAsInt() != 1) {
+            throw new HomeworkSeenException("Homework could not be marked as seen.");
+        }
+    }
+
+    /**
+     * This method will toggle the tick on homework
+     * meaning that if the homework has already been ticked then
+     * it will be un-ticked and if it isn't ticked then it will
+     * become ticked.
+     *
+     * @param homework
+     * @throws IOException
+     * @throws ServerException
+     * @throws HomeworkTickException
+     */
+    public void tickHomework(Homework homework) throws IOException, ServerException, HomeworkTickException {
+        HttpRequest.Builder httpRequestBuilder = new HttpRequest.Builder("https://www.classcharts.com/apiv2student/homeworkticked/" + homework.getStatus().getId(), "POST")
+                .setFollowRedirects(false)
+                .setHeader(authorizationHeader);
+        cookies.forEach(cookie -> httpRequestBuilder.setCookie(new HttpCookie(cookie.split("=")[0], cookie.split("=")[1])));
+        HttpRequest httpRequest = httpRequestBuilder.build();
+        HttpResponse httpResponse = httpRequest.execute();
+        JsonObject elem = JsonParser.parseString(httpResponse.getContent()).getAsJsonObject();
+        if (elem.get("success").getAsInt() != 1) {
+            throw new HomeworkTickException("Homework could not be ticked.");
+        }
+    }
+
 }
