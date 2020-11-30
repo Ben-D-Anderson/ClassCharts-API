@@ -59,3 +59,5 @@ Finally, the Student class contains methods to interact with homeworks.
 You can tick a homework with the method `Student#tickHomework(Homework)`. This method effectively toggles the tick status of the homework therefore if it is already ticked then it will un-tick and vice versa.
 
 Homeworks can also be marked as seen which happens normally when you just click on a homework on the ClassCharts web app. This is done with the method `Student#markHomeworkAsSeen(Homework)`.
+
+When a student session expires, you should reauthenticate a student object using `Student#reauthenticate()`.
