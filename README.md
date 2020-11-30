@@ -15,10 +15,11 @@ This java project is an unofficial ClassCharts API wrapper that can be used to:
 ## How To Use
 First, you should create a StudentCredentials object so that you can create a Student object and login to ClassCharts.
 
-This can be achieved by calling the static factory method `StudentCredential#from(String, String)`.
+This can be achieved by first calling the static factory method `ClassChartsDate#from(String)` or `ClassChartsDate#from(Date)` to get a ClassChartsDate object then use that when calling the static factory method `StudentCredential#from(String, ClassChartsDate)`.
 ```java
 //The date of birth should be in the format "dd/MM/yyyy"
-StudentCredentials studentCredentials = StudentCredentials.from("CODE", "DATE_OF_BIRTH");
+ClassChartsDate date = ClassChartsDate.from("DATE_OF_BIRTH")
+StudentCredentials studentCredentials = StudentCredentials.from("CODE", date);
 ```
 <br />
 
@@ -32,15 +33,18 @@ Student student = new Student(studentCredentials);
 
 The Student instance can now be used to get the homework associated with that user.
 
-Homework can be retrieved using the methods `getHomework()`, `getHomework(String, String)` and `getHomework(DisplayDate, String, String)` in the Student class.
+Homework can be retrieved using the methods `getHomework()`, `getHomework(ClassChartsDate, ClassChartsDate)` and `getHomework(DisplayDate, ClassChartsDate, ClassChartsDate)` in the Student class.
 
 Examples of how to use these methods are demonstrated below:
 ```java
-List<Homework> homework = student.getHomework();
 //The dates be in the format "dd/MM/yyyy"
-List<Homework> homework2 = student.getHomework("01/01/2020", "20/11/2020");
-List<Homework> homework3 = student.getHomework(DisplayDate.DUE, "01/01/2020", "20/11/2020");
-List<Homework> homework3 = student.getHomework(DisplayDate.ISSUE, "01/01/2020", "20/11/2020");
+ClassChartsDate startDate = ClassChartsDate.from("01/01/2020");
+ClassChartsDate endDate = ClassChartsDate.from("01/12/2020");
+
+List<Homework> homework = student.getHomework();
+List<Homework> homework2 = student.getHomework(startDate, endDate);
+List<Homework> homework3 = student.getHomework(DisplayDate.DUE, startDate, endDate);
+List<Homework> homework3 = student.getHomework(DisplayDate.ISSUE, startDate, endDate);
 ```
 <br />
 
