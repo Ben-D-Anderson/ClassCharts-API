@@ -1,4 +1,4 @@
-package com.terraboxstudios.classchartsapi;
+package com.terraboxstudios.classchartsapi.student;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -8,20 +8,30 @@ import com.terraboxstudios.classchartsapi.exception.*;
 import com.terraboxstudios.classchartsapi.http.HttpHeader;
 import com.terraboxstudios.classchartsapi.http.HttpRequest;
 import com.terraboxstudios.classchartsapi.http.HttpResponse;
-import com.terraboxstudios.classchartsapi.utils.DateValidator;
+import com.terraboxstudios.classchartsapi.obj.ClassChartsDate;
+import com.terraboxstudios.classchartsapi.obj.Homework;
 
 import java.io.IOException;
 import java.net.HttpCookie;
 import java.net.URLDecoder;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 public class Student {
 
-    private final List<String> cookies = new LinkedList<>();
+    private List<String> cookies;
     private HttpHeader authorizationHeader;
+    private final StudentCredentials studentCredentials;
     private int studentId;
 
     public Student(StudentCredentials studentCredentials) throws IOException, IDRetrievalException, LoginException, ServerException {
+        this.studentCredentials = studentCredentials;
+        reauthenticate();
+    }
+
+    public void reauthenticate() throws LoginException, ServerException, IOException, IDRetrievalException {
         login(studentCredentials);
         loadStudentId();
     }
@@ -41,6 +51,7 @@ public class Student {
         if (httpResponse.getResponseCode() != 302) {
             throw new LoginException("Login credentials invalid.");
         }
+        cookies = new LinkedList<>();
         for (String str : httpResponse.getResponseHeaders().get("Set-Cookie")) {
             cookies.add(str.split(";")[0]);
         }
@@ -84,16 +95,15 @@ public class Student {
         return homeworkRequester(httpRequestBuilder);
     }
 
-    public List<Homework> getHomework(String fromDate, String toDate) throws IOException, HomeworkRetrievalException, DateFormatException, ServerException {
+    public List<Homework> getHomework(ClassChartsDate fromDate, ClassChartsDate toDate) throws IOException, HomeworkRetrievalException, DateFormatException, ServerException {
         return getHomework(DisplayDate.ISSUE, fromDate, toDate);
     }
 
-    public List<Homework> getHomework(DisplayDate displayDate, String fromDate, String toDate) throws IOException, HomeworkRetrievalException, DateFormatException, ServerException {
-        if (!DateValidator.isDateValid(fromDate) || !DateValidator.isDateValid(toDate)) throw new DateFormatException("From-Date or To-Date do not follow format dd/MM/yyyy");
+    public List<Homework> getHomework(DisplayDate displayDate, ClassChartsDate fromDate, ClassChartsDate toDate) throws IOException, HomeworkRetrievalException, DateFormatException, ServerException {
         Map<String, String> params = new HashMap<>();
         params.put("display_date", displayDate.getDisplayDate());
-        params.put("from", fromDate.split("/")[2] + "-" + fromDate.split("/")[1] + "-" + fromDate.split("/")[0]);
-        params.put("to", toDate.split("/")[2] + "-" + toDate.split("/")[1] + "-" + toDate.split("/")[0]);
+        params.put("from", fromDate.getDate().split("/")[2] + "-" + fromDate.getDate().split("/")[1] + "-" + fromDate.getDate().split("/")[0]);
+        params.put("to", toDate.getDate().split("/")[2] + "-" + toDate.getDate().split("/")[1] + "-" + toDate.getDate().split("/")[0]);
         HttpRequest.Builder httpRequestBuilder = new HttpRequest.Builder("https://www.classcharts.com/apiv2student/homeworks/" + this.studentId, "GET")
                 .setFollowRedirects(false)
                 .setParams(params)
