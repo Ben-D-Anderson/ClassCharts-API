@@ -1,4 +1,4 @@
-package com.terraboxstudios.classchartsapi;
+package com.terraboxstudios.classchartsapi.obj;
 
 import com.google.gson.JsonArray;
 import lombok.AccessLevel;
