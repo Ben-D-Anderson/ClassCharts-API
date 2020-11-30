@@ -95,11 +95,11 @@ public class Student {
         return homeworkRequester(httpRequestBuilder);
     }
 
-    public List<Homework> getHomework(ClassChartsDate fromDate, ClassChartsDate toDate) throws IOException, HomeworkRetrievalException, DateFormatException, ServerException {
+    public List<Homework> getHomework(ClassChartsDate fromDate, ClassChartsDate toDate) throws IOException, HomeworkRetrievalException, ServerException {
         return getHomework(DisplayDate.ISSUE, fromDate, toDate);
     }
 
-    public List<Homework> getHomework(DisplayDate displayDate, ClassChartsDate fromDate, ClassChartsDate toDate) throws IOException, HomeworkRetrievalException, DateFormatException, ServerException {
+    public List<Homework> getHomework(DisplayDate displayDate, ClassChartsDate fromDate, ClassChartsDate toDate) throws IOException, HomeworkRetrievalException, ServerException {
         Map<String, String> params = new HashMap<>();
         params.put("display_date", displayDate.getDisplayDate());
         params.put("from", fromDate.getDate().split("/")[2] + "-" + fromDate.getDate().split("/")[1] + "-" + fromDate.getDate().split("/")[0]);
