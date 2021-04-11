@@ -29,8 +29,12 @@ public class ClassChartsDate {
     }
 
     @SneakyThrows
+    public Date getJavaDate() {
+        return format.parse(date);
+    }
+
     public String getTimetableDate() {
-        return new SimpleDateFormat("yyyy-MM-dd").format(format.parse(date));
+        return new SimpleDateFormat("yyyy-MM-dd").format(getJavaDate());
     }
 
 }
