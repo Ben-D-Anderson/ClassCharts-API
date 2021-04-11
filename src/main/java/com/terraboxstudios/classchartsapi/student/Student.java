@@ -148,9 +148,12 @@ public class Student {
     }
 
     public List<TimetableLesson> getTimetable(ClassChartsDate date) throws IOException, ServerException, TimetableRetrievalException {
-        HttpRequest.Builder httpRequestBuilder = new HttpRequest.Builder("https://www.classcharts.com/apiv2student/timetable/" + this.studentId + "?date=" + date.getTimetableDate(), "GET")
+        Map<String, String> params = new HashMap<>();
+        params.put("date", date.getTimetableDate());
+        HttpRequest.Builder httpRequestBuilder = new HttpRequest.Builder("https://www.classcharts.com/apiv2student/timetable/" + this.studentId, "GET")
                 .setFollowRedirects(false)
-                .setHeader(authorizationHeader);
+                .setHeader(authorizationHeader)
+                .setParams(params);
         cookies.forEach(cookie -> httpRequestBuilder.setCookie(new HttpCookie(cookie.split("=")[0], cookie.split("=")[1])));
         HttpRequest httpRequest = httpRequestBuilder.build();
         HttpResponse httpResponse = httpRequest.execute();
