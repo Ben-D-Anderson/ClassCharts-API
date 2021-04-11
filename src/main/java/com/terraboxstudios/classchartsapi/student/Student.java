@@ -1,8 +1,6 @@
 package com.terraboxstudios.classchartsapi.student;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.terraboxstudios.classchartsapi.enums.DisplayDate;
 import com.terraboxstudios.classchartsapi.exception.*;
 import com.terraboxstudios.classchartsapi.http.HttpHeader;
@@ -10,14 +8,12 @@ import com.terraboxstudios.classchartsapi.http.HttpRequest;
 import com.terraboxstudios.classchartsapi.http.HttpResponse;
 import com.terraboxstudios.classchartsapi.obj.ClassChartsDate;
 import com.terraboxstudios.classchartsapi.obj.Homework;
+import com.terraboxstudios.classchartsapi.obj.TimetableLesson;
 
 import java.io.IOException;
 import java.net.HttpCookie;
 import java.net.URLDecoder;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Student {
 
@@ -25,6 +21,7 @@ public class Student {
     private HttpHeader authorizationHeader;
     private final StudentCredentials studentCredentials;
     private int studentId;
+    private final Gson gson = new Gson();
 
     public Student(StudentCredentials studentCredentials) throws IOException, IDRetrievalException, LoginException, ServerException {
         this.studentCredentials = studentCredentials;
@@ -84,7 +81,7 @@ public class Student {
             throw new HomeworkRetrievalException("Homework could not be retrieved.");
         }
         List<Homework> homeworkList = new LinkedList<>();
-        jsonObject.get("data").getAsJsonArray().iterator().forEachRemaining(obj -> homeworkList.add(new Gson().fromJson(obj, Homework.class)));
+        jsonObject.get("data").getAsJsonArray().iterator().forEachRemaining(obj -> homeworkList.add(gson.fromJson(obj, Homework.class)));
         return homeworkList;
     }
 
@@ -145,5 +142,31 @@ public class Student {
             throw new HomeworkTickException("Homework could not be ticked.");
         }
     }
+
+    public List<TimetableLesson> getTimetable() throws ServerException, TimetableRetrievalException, IOException {
+        return getTimetable(ClassChartsDate.from(new Date()));
+    }
+
+    public List<TimetableLesson> getTimetable(ClassChartsDate date) throws IOException, ServerException, TimetableRetrievalException {
+        HttpRequest.Builder httpRequestBuilder = new HttpRequest.Builder("https://www.classcharts.com/apiv2student/timetable/" + this.studentId + "?date=" + date.getTimetableDate(), "GET")
+                .setFollowRedirects(false)
+                .setHeader(authorizationHeader);
+        cookies.forEach(cookie -> httpRequestBuilder.setCookie(new HttpCookie(cookie.split("=")[0], cookie.split("=")[1])));
+        HttpRequest httpRequest = httpRequestBuilder.build();
+        HttpResponse httpResponse = httpRequest.execute();
+        JsonObject elem = JsonParser.parseString(httpResponse.getContent()).getAsJsonObject();
+        if (elem.get("success").getAsInt() != 1) {
+            throw new TimetableRetrievalException("Homework could not be ticked.");
+        }
+        if (elem.getAsJsonArray("data") == null || elem.getAsJsonArray("data").isJsonNull()) {
+            return new ArrayList<>();
+        }
+        JsonArray lessonArrayJson = elem.getAsJsonArray("data");
+        List<TimetableLesson> lessons = new ArrayList<>();
+        lessonArrayJson.iterator().forEachRemaining(obj -> lessons.add(gson.fromJson(obj, TimetableLesson.class)));
+        return lessons;
+    }
+
+
 
 }
