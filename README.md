@@ -33,7 +33,7 @@ Student student = new Student(studentCredentials);
 
 The Student instance can now be used to get the homework associated with that user.
 
-Homework can be retrieved using the methods `getHomework()`, `getHomework(ClassChartsDate, ClassChartsDate)` and `getHomework(DisplayDate, ClassChartsDate, ClassChartsDate)` in the Student class.
+Homework can be retrieved using the methods `getHomework()`, `getHomework(ClassChartsDate, ClassChartsDate)` and `getHomework(DisplayDate, ClassChartsDate, ClassChartsDate)` in the Student class. A student's timetable can also be accessed by the method `getTimetable()` which returns the current day's timetable lessons and the method `getTimetable(ClassChartsDate)` which returns the timetable lessons of the given date.
 
 Examples of how to use these methods are demonstrated below:
 ```java
@@ -45,6 +45,13 @@ List<Homework> homework = student.getHomework();
 List<Homework> homework2 = student.getHomework(startDate, endDate);
 List<Homework> homework3 = student.getHomework(DisplayDate.DUE, startDate, endDate);
 List<Homework> homework3 = student.getHomework(DisplayDate.ISSUE, startDate, endDate);
+
+//Get today's lessons
+List<TimetableLesson> lessons = student.getTimetable();
+//Get tomorrow's lessons
+Calendar calendar = Calendar.getInstance();
+calendar.add(Calendar.DATE, 1);
+List<TimetableLesson> lessonsTomorrow = student.getTimetable(calendar.getTime());
 ```
 <br />
 
